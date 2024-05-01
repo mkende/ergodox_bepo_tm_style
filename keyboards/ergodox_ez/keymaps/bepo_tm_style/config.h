@@ -1,5 +1,3 @@
-#include "../../config.h"
-
 // Sets good default for the speed of the mouse.
 #undef MOUSEKEY_INTERVAL
 #undef MOUSEKEY_DELAY
