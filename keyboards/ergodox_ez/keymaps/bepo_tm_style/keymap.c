@@ -42,6 +42,15 @@
 // The number of arrows that are sent by the fast arrow keys.
 #define FAST_ARROW_TIME 10
 
+#ifdef NO_SLEEP_MODE
+// For the no_sleep variant, the Sleep key in the upper left corner is replaced
+// by Left Ctrl + Alt + L which locks a linux computer.
+#define MK_SLEEP LCA(BP_L)
+#else
+// Otherwise, we just send the Sleep keycode.
+#define MK_SLEEP KC_SLEP
+#endif
+
 // Custom keycodes
 enum {
   // SAFE_RANGE must be used to tag the first element of the enum.
@@ -84,11 +93,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // Layer 1: function and media keys.
   [FN] = LAYOUT_ergodox(
     /* left hand */
-    KC_SLEP, KC_F1,      KC_F2,  KC_F3,   KC_F4,    KC_F5,    ___,
-    ___,     CTRL_B,     ___,    ___,     ___,      ___,      ___,
-    ___,     COPY_ALL,   CTRL_U, CTRL_I,  ___,      KC_LSFT,
-    ___,     PASTE_LINK, MK_CUT, MK_COPY, MK_PASTE, KC_LCTL, ___,
-    ___,     ___,        ___,    ___,     ___,
+    MK_SLEEP, KC_F1,      KC_F2,  KC_F3,   KC_F4,    KC_F5,    ___,
+    ___,      CTRL_B,     ___,    ___,     ___,      ___,      ___,
+    ___,      COPY_ALL,   CTRL_U, CTRL_I,  ___,      KC_LSFT,
+    ___,      PASTE_LINK, MK_CUT, MK_COPY, MK_PASTE, KC_LCTL, ___,
+    ___,      ___,        ___,    ___,     ___,
                                                          ___, KC_MNXT,
                                                               KC_MPLY,
                                                  ___,    ___, KC_MPRV,
@@ -107,11 +116,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // Layer 2: Mouse control.
   [MOUSE] = LAYOUT_ergodox(
     /* left hand */
-    KC_SLEP, KC_F1,      KC_F2,   KC_F3,   KC_F4,    KC_F5,    ___,
-    ___,     ___,        KC_BTN1, KC_MS_U, KC_BTN2,  ___,      ___,
-    ___,     COPY_ALL,   KC_MS_L, KC_MS_D, KC_MS_R,  KC_LSFT,
-    ___,     PASTE_LINK, MK_CUT,  MK_COPY, MK_PASTE, KC_LCTL, ___,
-    ___,     ___,        ___,     ___,     ___,
+    MK_SLEEP, KC_F1,      KC_F2,   KC_F3,   KC_F4,    KC_F5,    ___,
+    ___,      ___,        KC_BTN1, KC_MS_U, KC_BTN2,  ___,      ___,
+    ___,      COPY_ALL,   KC_MS_L, KC_MS_D, KC_MS_R,  KC_LSFT,
+    ___,      PASTE_LINK, MK_CUT,  MK_COPY, MK_PASTE, KC_LCTL, ___,
+    ___,      ___,        ___,     ___,     ___,
                                                        ___, KC_MPRV,
                                                             KC_MPLY,
                                                   ___, ___, KC_MNXT,
