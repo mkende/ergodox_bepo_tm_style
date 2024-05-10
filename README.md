@@ -26,3 +26,11 @@ The latter, requires that you have set-up the `qmk` CLI tool. See the
 
 The `_no_sleep` variant of the keymap does not have the *sleep* key in the upper
 left corner. Instead it has a ctrl + alt + l shortcut.
+
+The firmware can then be flashed with the following command for example:
+
+```sh
+teensy_loader_cli --mcu=TEENSY2 -w ergodox_ez_base_bepo_tm_style.hex
+```
+
+Which requires the Teensy CLI program.
