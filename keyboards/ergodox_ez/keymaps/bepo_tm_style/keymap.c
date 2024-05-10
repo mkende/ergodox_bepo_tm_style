@@ -7,6 +7,9 @@
 
 #include QMK_KEYBOARD_H
 #include "keymap_bepo.h"
+#include "sendstring_bepo.h"
+
+#define OUR_VERSION "v6"
 
 // The layers that we are defining for this keyboards.
 #define BASE 0
@@ -66,6 +69,7 @@ enum {
   CTRL_U,      // Send Ctrl+B (underline).
   CTRL_I,      // Send Ctrl+B (italic).
   DOUBLE_0,    // Send 00
+  PRINT_VER,   // Send the current version of the board as a string.
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -141,11 +145,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // recognised by all OSs.
   [NUMS] = LAYOUT_ergodox(
     /* left hand */
-    KC_PSCR, KC_INS, KC_PAUS, ___, ___, ___, ___,
-    ___,     ___,    ___,     ___, ___, ___, ___,
-    ___,     ___,    ___,     ___, ___, ___,
-    ___,     ___,    ___,     ___, ___, ___, ___,
-    ___,     ___,    ___,     ___,     ___,
+    KC_PSCR,   KC_INS, KC_PAUS, ___, ___, ___, ___,
+    PRINT_VER, ___,    ___,     ___, ___, ___, ___,
+    ___,       ___,    ___,     ___, ___, ___,
+    ___,       ___,    ___,     ___, ___, ___, ___,
+    ___,       ___,    ___,     ___,     ___,
                                               ___, ___,
                                                    ___,
                                          ___, ___, ___,
@@ -348,6 +352,12 @@ tap_dance_action_t tap_dance_actions[] = {
 // press was an underscore.
 bool last_press_is_underscore = false;
 
+#ifndef NO_SLEEP_MODE
+#define VERSION_STRING "ergodox_ez_bepo_tm_style " OUR_VERSION
+#else
+#define VERSION_STRING "ergodox_ez_bepo_tm_style " OUR_VERSION " no_sleep"
+#endif
+
 // Runs for each key down or up event.
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (keycode != TD(TAP_MACRO)) {
@@ -384,14 +394,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
   switch(keycode) {
     case COPY_ALL:
-      // A in QWERTY is also A in BÉPO (SEND_STRING assumes a QWERTY keymap)
+      // due to the #include "sendstring_bepo.h" SEND_STRING expects a "BÉPO"
+      // string and will send the right keycode for it.
+      // A in QWERTY is also A in BÉPO
       // There is no string representation of the insert key, so we need to use
       // the SS_UP/DOWN macro, instead of SS_LCTL(...).
       SEND_STRING_IF_PRESSED(SS_LCTL("a") SS_DOWN(X_LCTL) SS_TAP(X_INSERT) SS_UP(X_LCTL) SS_TAP(X_RIGHT));
       return false;
     case PASTE_LINK:
-      // B in QWERTY is K in BÉPO
-      SEND_STRING_IF_PRESSED(SS_LCTL("b") SS_DOWN(X_LSFT) SS_TAP(X_INSERT) SS_UP(X_LSFT) SS_TAP(X_ENTER));
+      // K in BÉPO is B in QWERTY
+      SEND_STRING_IF_PRESSED(SS_LCTL("k") SS_DOWN(X_LSFT) SS_TAP(X_INSERT) SS_UP(X_LSFT) SS_TAP(X_ENTER));
       return false;
     case FAST_UP:
       if (record->event.pressed) {
@@ -408,13 +420,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
       }
     case CTRL_B:
-      SEND_STRING_IF_PRESSED(SS_LCTL("q"));  // Ctrl+q (== Ctrl+b in bépo)
+      SEND_STRING_IF_PRESSED(SS_LCTL("b"));  // Ctrl+q (== Ctrl+b in bépo)
       return false;
     case CTRL_U:
-      SEND_STRING_IF_PRESSED(SS_LCTL("s"));  // Ctrl+s (== Ctrl+u in bépo)
+      SEND_STRING_IF_PRESSED(SS_LCTL("u"));  // Ctrl+s (== Ctrl+u in bépo)
       return false;
     case CTRL_I:
-      SEND_STRING_IF_PRESSED(SS_LCTL("d"));  // Ctrl+d (== Ctrl+i in bépo)
+      SEND_STRING_IF_PRESSED(SS_LCTL("i"));  // Ctrl+d (== Ctrl+i in bépo)
       return false;
     case DOUBLE_0:
       if (record->event.pressed) {
@@ -456,6 +468,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         unregister_code(KC_RIGHT);
         unregister_code(KC_LCTL);
       }       
+      return false;
+    case PRINT_VER:
+      SEND_STRING_IF_PRESSED(VERSION_STRING);
       return false;
     HANDLE_LATERALIZED_KEY_PAIR(KC_LEFT, KC_RIGHT);
     HANDLE_LATERALIZED_KEY_PAIR(KC_MS_L, KC_MS_R);

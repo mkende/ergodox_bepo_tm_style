@@ -1,4 +1,7 @@
 Changelog for the bépo "TypeMatrix style" layout for the Ergodox EZ keyboard
 
-2024-05-10
+v6 - 2024-05-10
  - Add a caps lock key on the right shift key (within they NUM layer).
+ - Add a key that prints the current version of the firmware (tab key in the NUM
+   layer).
+ - Switch the keymap to be defined using bépo string.

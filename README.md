@@ -9,7 +9,7 @@ The keymap here is meant to be used with a [Bépo](http://bepo.fr) layout. It is
 designed to be somewhat similar to a TypeMatrix keyboard so that switching
 between one and the other is easy.
 
-![The Keymap](https://i.imgur.com/BaiVGd5.png)
+![The Keymap](img/V6.png)
 
 *This keymap is generated using http://www.keyboard-layout-editor.com.*
 
@@ -18,7 +18,7 @@ You can download the keymap on the
 can build it yourself with
 
 ```sh
-qmk compile -kb ergodox_ez -km bepo_tm_style
+qmk compile -j 12 -kb ergodox_ez -km bepo_tm_style
 ```
 
 The latter, requires that you have set-up the `qmk` CLI tool. See the
