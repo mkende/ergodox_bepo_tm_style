@@ -37,7 +37,7 @@
 #define DYNAMIC_MACRO_USER_CALL 
 
 // NKRO is activated by default (otherwise we need a keyboard command for it).
-#define FORCE_NKRO
+#define NKRO_DEFAULT_ON true
 
 // Disable some features that we don’t need to save space.
 // Other features are enabled/disabled in rules.mk.

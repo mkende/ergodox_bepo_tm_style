@@ -121,8 +121,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [MOUSE] = LAYOUT_ergodox(
     /* left hand */
     MK_SLEEP, KC_F1,      KC_F2,   KC_F3,   KC_F4,    KC_F5,    ___,
-    ___,      ___,        KC_BTN1, KC_MS_U, KC_BTN2,  ___,      ___,
-    ___,      COPY_ALL,   KC_MS_L, KC_MS_D, KC_MS_R,  KC_LSFT,
+    ___,      ___,        MS_BTN1, MS_UP,   MS_BTN2,  ___,      ___,
+    ___,      COPY_ALL,   MS_LEFT, MS_DOWN, MS_RGHT,  KC_LSFT,
     ___,      PASTE_LINK, MK_CUT,  MK_COPY, MK_PASTE, KC_LCTL, ___,
     ___,      ___,        ___,     ___,     ___,
                                                        ___, KC_MPRV,
@@ -130,9 +130,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                   ___, ___, KC_MNXT,
     /* right hand */
          ___, KC_F6, KC_F7,   KC_F8,   KC_F9,   KC_F10, KC_F11,
-         ___, ___,   KC_WH_L, KC_WH_U, KC_WH_R, XXX,    KC_F12,
-              ___,   KC_BTN1, KC_WH_D, KC_BTN2, KC_BTN3,    ___,
-         ___, ___,   KC_ACL0, KC_ACL1, KC_ACL2, ___,    ___,
+         ___, ___,   MS_WHLL, MS_WHLU, MS_WHLR, XXX,    KC_F12,
+              ___,   MS_BTN1, MS_WHLD, MS_BTN2, MS_BTN3,    ___,
+         ___, ___,   MS_ACL0, MS_ACL1, MS_ACL2, ___,    ___,
                      ___,     ___,     ___,     ___,    ___,
     ___, ___,
     ___,
@@ -473,10 +473,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       SEND_STRING_IF_PRESSED(VERSION_STRING);
       return false;
     HANDLE_LATERALIZED_KEY_PAIR(KC_LEFT, KC_RIGHT);
-    HANDLE_LATERALIZED_KEY_PAIR(KC_MS_L, KC_MS_R);
-    HANDLE_LATERALIZED_KEY_PAIR(KC_WH_L, KC_WH_R);
-    HANDLE_LATERALIZED_KEY_PAIR(KC_BTN1, KC_BTN2);
-    HANDLE_LATERALIZED_KEY_PAIR(KC_ACL0, KC_ACL2);
+    HANDLE_LATERALIZED_KEY_PAIR(MS_LEFT, MS_RGHT);
+    HANDLE_LATERALIZED_KEY_PAIR(MS_WHLL, MS_WHLR);
+    HANDLE_LATERALIZED_KEY_PAIR(MS_BTN1, MS_BTN2);
+    HANDLE_LATERALIZED_KEY_PAIR(MS_ACL0, MS_ACL2);
   }
   return true; // Let QMK send the enter press/release events
 }
