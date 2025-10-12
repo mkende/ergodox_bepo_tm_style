@@ -2,8 +2,10 @@
     "userspace_version": "1.0",
     "build_targets": [
         ["zsa/ergodox_ez/m32u4", "bepo_tm_style"],
+        ["zsa/ergodox_ez/m32u4", "bepo_tm_style_macos"]
         ["zsa/ergodox_ez/m32u4", "bepo_tm_style_no_sleep"]
         ["zsa/ergodox_ez/stm32", "bepo_tm_style"],
+        ["zsa/ergodox_ez/stm32", "bepo_tm_style_macos"]
         ["zsa/ergodox_ez/stm32", "bepo_tm_style_no_sleep"]
     ]
 }

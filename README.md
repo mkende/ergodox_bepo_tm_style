@@ -53,3 +53,10 @@ The layout is meant to work with an Ergodox EZ *original* (neither *shine* nor
 
 The `_no_sleep` variant of the keymap does not have the *sleep* key in the upper
 left corner. Instead it has a ctrl + alt + l shortcut.
+
+The `_macos` variant has the same change as the `no_sleep` one and, in addition,
+it also uses the classical `CTRL+x/c/v` shortcuts for the cut/copy/paste keys in
+the `FN` layer, as the shortcuts used in the default layout are not recognized
+under MacOS. It is then expected that the `control` and `command` keys are
+swapped at the OS level. This let the layout be the most functionnal under other
+operating systems too.

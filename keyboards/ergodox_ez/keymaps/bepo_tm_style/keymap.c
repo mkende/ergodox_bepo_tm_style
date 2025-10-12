@@ -4,12 +4,20 @@
 // layout should be relatively easy.
 //
 // See the README.md file for an image of this keymap.
+//
+// TODO:
+//
+// - Consider using Key Overrides to improve the behavior under MacOS
+//   https://docs.qmk.fm/features/key_overrides
+// - Try using OS Detection instead of the static MacOS build
+//   https://docs.qmk.fm/features/os_detection
 
 #include QMK_KEYBOARD_H
 #include "keymap_bepo.h"
 #include "sendstring_bepo.h"
 
-#define OUR_VERSION "v6"
+// The version of the keyboard (printed using NUM + TAB).
+#define OUR_VERSION "v7"
 
 // The layers that we are defining for this keyboards.
 #define BASE 0
@@ -37,10 +45,17 @@
 #define SPC_RALT  MT(MOD_RALT, KC_SPC)  // SPACE key and right alt modifier.
 #define PERC_FN   LT(FN, BP_PERC)      // '%' key and FN layer toggle.
 
+#ifndef MACOS_MODE
 // The most portable copy/paste keys (windows (mostly), linux, and some terminal emulators).
 #define MK_CUT    LSFT(KC_DEL)  // shift + delete
 #define MK_COPY   LCTL(KC_INS)  // ctrl + insert
 #define MK_PASTE  LSFT(KC_INS)  // shift + insert
+#else
+// Except on MacOS, of course...
+#define MK_CUT    LCTL(KC_X)  // shift + delete
+#define MK_COPY   LCTL(KC_C)  // ctrl + insert
+#define MK_PASTE  LCTL(KC_V)  // shift + insert
+#endif
 
 // The number of arrows that are sent by the fast arrow keys.
 #define FAST_ARROW_TIME 10
@@ -129,11 +144,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                             KC_MPLY,
                                                   ___, ___, KC_MNXT,
     /* right hand */
-         ___, KC_F6, KC_F7,   KC_F8,   KC_F9,   KC_F10, KC_F11,
-         ___, ___,   MS_WHLL, MS_WHLU, MS_WHLR, XXX,    KC_F12,
-              ___,   MS_BTN1, MS_WHLD, MS_BTN2, MS_BTN3,    ___,
-         ___, ___,   MS_ACL0, MS_ACL1, MS_ACL2, ___,    ___,
-                     ___,     ___,     ___,     ___,    ___,
+         ___, KC_F6, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,
+         ___, ___,   MS_WHLL, MS_WHLU, MS_WHLR, XXX,     KC_F12,
+              ___,   MS_BTN1, MS_WHLD, MS_BTN2, MS_BTN3, CW_TOGG,
+         ___, ___,   MS_ACL0, MS_ACL1, MS_ACL2, ___,     ___,
+                     ___,     ___,     ___,     ___,     ___,
     ___, ___,
     ___,
     ___, ___, ___),
@@ -399,11 +414,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       // A in QWERTY is also A in BÉPO
       // There is no string representation of the insert key, so we need to use
       // the SS_UP/DOWN macro, instead of SS_LCTL(...).
+      #ifndef MACOS_MODE
       SEND_STRING_IF_PRESSED(SS_LCTL("a") SS_DOWN(X_LCTL) SS_TAP(X_INSERT) SS_UP(X_LCTL) SS_TAP(X_RIGHT));
+      #else
+      SEND_STRING_IF_PRESSED(SS_LCTL("a") SS_LCTL("c") SS_TAP(X_RIGHT));
+      #endif
       return false;
     case PASTE_LINK:
       // K in BÉPO is B in QWERTY
+      #ifndef MACOS_MODE
       SEND_STRING_IF_PRESSED(SS_LCTL("k") SS_DOWN(X_LSFT) SS_TAP(X_INSERT) SS_UP(X_LSFT) SS_TAP(X_ENTER));
+      #else
+      SEND_STRING_IF_PRESSED(SS_LCTL("k") SS_LCTL("v") SS_TAP(X_ENTER));
+      #endif
       return false;
     case FAST_UP:
       if (record->event.pressed) {
@@ -435,6 +458,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
     case SWAP_CHARS:
+      #ifndef MACOS_MODE
       SEND_STRING_IF_PRESSED(
           SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_UP(X_LSFT)  // Select char to the left
           SS_DOWN(X_LSFT) SS_TAP(X_DEL) SS_UP(X_LSFT)  // Shift + Del == cut
@@ -442,14 +466,32 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           SS_DOWN(X_LSFT) SS_TAP(X_INSERT) SS_UP(X_LSFT)  // Shift + Insert == paste
           SS_TAP(X_RIGHT)
         );
+      #else
+      SEND_STRING_IF_PRESSED(
+          SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_UP(X_LSFT)  // Select char to the left
+          SS_LCTL("x")
+          SS_TAP(X_LEFT)
+          SS_LCTL("v")
+          SS_TAP(X_RIGHT)
+        );
+      #endif
       return false;
     case COPY_WORD:
+      #ifndef MACOS_MODE
       SEND_STRING_IF_PRESSED(
           SS_DOWN(X_LCTL) SS_TAP(X_LEFT) SS_UP(X_LCTL)  // Ctrl + Left
           SS_DOWN(X_LCTL) SS_DOWN(X_LSFT) SS_TAP(X_RIGHT) SS_UP(X_LSFT) SS_UP(X_LCTL)  // Ctrl + Shift + Right
           SS_DOWN(X_LCTL) SS_TAP(X_INSERT) SS_UP(X_LCTL)  // Ctrl + Insert == copy
           SS_DOWN(X_RIGHT)
         );
+      #else
+      SEND_STRING_IF_PRESSED(
+          SS_DOWN(X_LALT) SS_TAP(X_LEFT) SS_UP(X_LALT)  // Alt + Left
+          SS_DOWN(X_LALT) SS_DOWN(X_LSFT) SS_TAP(X_RIGHT) SS_UP(X_LSFT) SS_UP(X_LALT)  // Alt + Shift + Right
+          SS_LCTL("v")
+          SS_DOWN(X_RIGHT)
+        );
+      #endif
       return false;
     case CTRL_LEFT:
       if (record->event.pressed) {
@@ -593,10 +635,14 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 bool caps_word_press_user(uint16_t keycode) {
   switch (keycode) {
     // Keycodes that continue Caps Word, with shift applied.
-    case KC_A ... KC_X:
+    case KC_A ... KC_F:  // We skip G, which is our ,
+    case KC_H ... KC_M:  // We skip N, which is our ’
+    case KC_O ... KC_U:  // We skip V, which is our .
+    case KC_W ... KC_X:  // We skip Y, which is our ^
     case KC_Z:
+    case KC_1 ... KC_0:
     case KC_LBRC:  // Z
-    case KC_RBRC:  // W
+    case KC_RBRC:  // W VGYN
     case KC_SCLN:  // N
     case KC_QUOT:  // M
     case KC_BSLS:  // Ç
@@ -608,12 +654,10 @@ bool caps_word_press_user(uint16_t keycode) {
       return true;
 
     // Keycodes that continue Caps Word, without shifting.
-    case KC_Y:  // ^
     case KC_ALGR:  // alt-gr
     case KC_BSPC:
     case KC_DEL:
     case KC_UNDS:
-    case KC_8:  // '-'
       return true;
     // When using the SPC_RALT key, the caps word is interrupted unless we fully
     // allow KC_SPC here (this might be considered to be a bug in the

@@ -1,5 +1,12 @@
 Changelog for the bépo "TypeMatrix style" layout for the Ergodox EZ keyboard
 
+v7 - 2025-10-12
+ - Different tuning of the mouse keys
+ - Adding support for the stm32 Ergodox EZ
+ - Adding the macos variant (using different copy/paste shortcut)
+ - Improve support of the caps word function (also trigger in the MOUSE layer
+   and "capitalize numbers).
+
 v6 - 2024-05-10
  - Add a caps lock key on the right shift key (within they NUM layer).
  - Add a key that prints the current version of the firmware (tab key in the NUM
