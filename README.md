@@ -24,9 +24,6 @@ qmk compile -j 12 -kb ergodox_ez -km bepo_tm_style
 The latter, requires that you have set-up the `qmk` CLI tool. See the
 [QMK Guide](https://docs.qmk.fm/#/newbs_getting_started) if needed.
 
-The `_no_sleep` variant of the keymap does not have the *sleep* key in the upper
-left corner. Instead it has a ctrl + alt + l shortcut.
-
 The firmware can then be flashed with the following command for example:
 
 ```sh
@@ -34,3 +31,25 @@ teensy_loader_cli --mcu=TEENSY2 -w ergodox_ez_base_bepo_tm_style.hex
 ```
 
 Which requires the Teensy CLI program.
+
+## Variants
+
+### Keyboard
+
+The layouts can be built with the `zsa/ergodox_ez/m32u4` keyboard (which is the
+default for `zsa/ergodox_ez` or even just `ergodox_ez`). This is the legacy
+Ergodox EZ keyboards, pre-2024, using a Teensy-like MCU.
+
+Otherwise, the layouts can be built for the `zsa/ergodox_ez/stm32` keyboard
+which correspond to the more recent models, using a STM32 MCU. Note that the
+layout code is completely shared between the two keyboards but, technically,
+the stm32 variant uses the layouts defined in the `keyboards/zsa/ergodox_ez`
+folder intead of the `keyboards/ergodox_ez` folder used by the legacy variants.
+
+The layout is meant to work with an Ergodox EZ *original* (neither *shine* nor
+*glow*). However it will probably work with them too.
+
+### Keymaps
+
+The `_no_sleep` variant of the keymap does not have the *sleep* key in the upper
+left corner. Instead it has a ctrl + alt + l shortcut.
