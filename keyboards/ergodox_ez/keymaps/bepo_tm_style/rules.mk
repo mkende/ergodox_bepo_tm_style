@@ -10,7 +10,7 @@ LTO_ENABLE           = yes # Link time optimization (forces NO_ACTION_MACRO and 
 NO_USB_STARTUP_CHECK = yes # Don't do USB startup checks, might help with some KVM.
 CAPS_WORD_ENABLE     = yes # Activate the QK_CAPS_WORD_TOGGLE key.
 
-BOOTMAGIC_ENABLE   = no # Enable Bootmagic Lite
+BOOTMAGIC_ENABLE   = yes # We don’t need bootmagic but the zsa version of the firmware needs it.
 KEY_LOCK_ENABLE    = no  # Disable the QK_LOCK key
 UNICODE_ENABLE     = no
 SLEEP_LED_ENABLE   = no
