@@ -2,6 +2,8 @@
     "userspace_version": "1.0",
     "build_targets": [
         ["zsa/ergodox_ez/m32u4", "bepo_tm_style"],
+        ["zsa/ergodox_ez/m32u4", "bepo_tm_style_left_handed"]
         ["zsa/ergodox_ez/stm32", "bepo_tm_style"],
+        ["zsa/ergodox_ez/stm32", "bepo_tm_style_left_handed"]
     ]
 }

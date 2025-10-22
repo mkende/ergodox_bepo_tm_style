@@ -31,6 +31,14 @@
 #define TAP_MACRO 0
 #define TAP_SWAP  1
 
+#ifndef LEFT_HANDED_MODE
+#define MACRO_OR_SWAP TAP_MACRO
+#define SWAP_OR_MACRO TAP_SWAP
+#else
+#define MACRO_OR_SWAP TAP_SWAP
+#define SWAP_OR_MACRO TAP_MACRO
+#endif
+
 // A 'transparent' key code (that falls back to the layers below it).
 #define ___ KC_TRANSPARENT
 
@@ -92,9 +100,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_LSFT,  BP_A,    BP_U,    BP_I,    BP_E,    BP_COMM,
     KC_LCTL,  BP_AGRV, BP_Y,    BP_X,    BP_DOT,  BP_K,    KC_ENT,
     ESC_FN,   BP_ECIR, KC_LGUI, KC_LALT, SPC_RALT,
-                                                      TD(TAP_SWAP), KC_VOLU,
-                                                                    KC_MUTE,
-                                                  TT(FN), TT(NUMS), KC_VOLD,
+                                                    TD(SWAP_OR_MACRO), KC_VOLU,
+                                                                       KC_MUTE,
+                                                    TT(FN), TT(NUMS),  KC_VOLD,
     /* right hand */
         KC_DEL,  BP_AT,   BP_PLUS,  BP_MINS, BP_SLSH,     BP_ASTR, BP_EQL,
         KC_BSPC, BP_DCIR, BP_V,     BP_D,    BP_L,        BP_J,    BP_Z,
@@ -103,7 +111,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                           SPC_RALT, KC_LALT, TT(SYSLEDS), BP_CCED, PERC_FN,
     KC_LEFT, KC_RIGHT,
     KC_UP,
-    KC_DOWN, TD(TAP_MACRO), TT(MOUSE)),
+    KC_DOWN, TD(MACRO_OR_SWAP), TT(MOUSE)),
 
   // Layer 1: function and media keys.
   [FN] = LAYOUT_ergodox(
@@ -501,6 +509,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
     case PRINT_VER:
       SEND_STRING_IF_PRESSED("ergodox_ez_bepo_tm_style " OUR_VERSION);
+      #ifdef LEFT_HANDED_MODE
+      SEND_STRING_IF_PRESSED(" left_handed")
+      #endif
       if (record->event.pressed) {
         switch (detected_host_os()) {
           case OS_UNSURE:

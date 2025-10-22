@@ -91,3 +91,10 @@ folder intead of the `keyboards/ergodox_ez` folder used by the legacy variants.
 
 The layout is meant to work with an Ergodox EZ *original* (neither *shine* nor
 *glow*). However it will probably work with them too.
+
+### Keymaps
+
+The `_left_handed` variant of the keymap swap the macro key (on the right thumb
+cluster) with the swap-hand key (on the left thumb cluster). So that the
+keyboard can be used entirely with the right hand if you are using the mouse
+with your left hand.

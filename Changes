@@ -6,6 +6,8 @@ v8 - ??
    shortcuts.
  - Drop the no_sleep variant and instead use OS detection to emit the correct
    sleep shortcut.
+ - Create a left_handed variant that swaps the Macro and Hand-Swap keys, so that
+   the keyboard can be used with the right hand only.
 
 v7 - 2025-10-12
  - Different tuning of the mouse keys
