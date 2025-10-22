@@ -45,29 +45,21 @@
 #define SPC_RALT  MT(MOD_RALT, KC_SPC)  // SPACE key and right alt modifier.
 #define PERC_FN   LT(FN, BP_PERC)      // '%' key and FN layer toggle.
 
-#ifndef MACOS_MODE
-// The most portable copy/paste keys (windows (mostly), linux, and some terminal emulators).
-#define MK_CUT    LSFT(KC_DEL)  // shift + delete
-#define MK_COPY   LCTL(KC_INS)  // ctrl + insert
-#define MK_PASTE  LSFT(KC_INS)  // shift + insert
-#else
-// Except on MacOS, of course...
-#define MK_CUT    LCTL(KC_X)  // shift + delete
-#define MK_COPY   LCTL(KC_C)  // ctrl + insert
-#define MK_PASTE  LCTL(KC_V)  // shift + insert
-#endif
-
 // The number of arrows that are sent by the fast arrow keys.
 #define FAST_ARROW_TIME 10
 
-#ifdef NO_SLEEP_MODE
-// For the no_sleep variant, the Sleep key in the upper left corner is replaced
-// by Left Ctrl + Alt + L which locks a linux computer.
-#define MK_SLEEP LCA(BP_L)
-#else
-// Otherwise, we just send the Sleep keycode.
-#define MK_SLEEP KC_SLEP
-#endif
+bool is_mac_os(void) {
+  switch (detected_host_os()) {
+    case OS_UNSURE:
+    case OS_LINUX:
+    case OS_WINDOWS:
+      return false;
+    case OS_MACOS:
+    case OS_IOS:
+      return true;
+  }
+  return false;
+}
 
 // Custom keycodes
 enum {
@@ -85,6 +77,10 @@ enum {
   CTRL_I,      // Send Ctrl+B (italic).
   DOUBLE_0,    // Send 00
   PRINT_VER,   // Send the current version of the board as a string.
+  COPY,        // Send ctrl + insert, except under MacOS where it sends ctrl + c.
+  CUT,         // Send shift + delete, except under MacOS
+  PASTE,       // shift + insert, except under MacOS
+  SLEEP,       // Puts the computer to sleep
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -112,10 +108,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // Layer 1: function and media keys.
   [FN] = LAYOUT_ergodox(
     /* left hand */
-    MK_SLEEP, KC_F1,      KC_F2,  KC_F3,   KC_F4,    KC_F5,    ___,
+    SLEEP, KC_F1,      KC_F2,  KC_F3,   KC_F4,    KC_F5,    ___,
     ___,      CTRL_B,     ___,    ___,     ___,      ___,      ___,
     ___,      COPY_ALL,   CTRL_U, CTRL_I,  ___,      KC_LSFT,
-    ___,      PASTE_LINK, MK_CUT, MK_COPY, MK_PASTE, KC_LCTL, ___,
+    ___,      PASTE_LINK, CUT,    COPY,    PASTE,    KC_LCTL, ___,
     ___,      ___,        ___,    ___,     ___,
                                                          ___, KC_MNXT,
                                                               KC_MPLY,
@@ -135,10 +131,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // Layer 2: Mouse control.
   [MOUSE] = LAYOUT_ergodox(
     /* left hand */
-    MK_SLEEP, KC_F1,      KC_F2,   KC_F3,   KC_F4,    KC_F5,    ___,
+    SLEEP, KC_F1,      KC_F2,   KC_F3,   KC_F4,    KC_F5,    ___,
     ___,      ___,        MS_BTN1, MS_UP,   MS_BTN2,  ___,      ___,
     ___,      COPY_ALL,   MS_LEFT, MS_DOWN, MS_RGHT,  KC_LSFT,
-    ___,      PASTE_LINK, MK_CUT,  MK_COPY, MK_PASTE, KC_LCTL, ___,
+    ___,      PASTE_LINK, CUT,     COPY,    PASTE, KC_LCTL, ___,
     ___,      ___,        ___,     ___,     ___,
                                                        ___, KC_MPRV,
                                                             KC_MPLY,
@@ -367,11 +363,7 @@ tap_dance_action_t tap_dance_actions[] = {
 // press was an underscore.
 bool last_press_is_underscore = false;
 
-#ifndef NO_SLEEP_MODE
-#define VERSION_STRING "ergodox_ez_bepo_tm_style " OUR_VERSION
-#else
-#define VERSION_STRING "ergodox_ez_bepo_tm_style " OUR_VERSION " no_sleep"
-#endif
+#define SEND_STRING_IF_PRESSED(x) if (record->event.pressed) { SEND_STRING(x); } else {}
 
 // Runs for each key down or up event.
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -405,28 +397,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
   last_press_is_underscore = set_last_press_is_underscore;
 
-  #define SEND_STRING_IF_PRESSED(x) if (record->event.pressed) { SEND_STRING(x); } else {}
-
   switch(keycode) {
     case COPY_ALL:
       // due to the #include "sendstring_bepo.h" SEND_STRING expects a "BÉPO"
       // string and will send the right keycode for it.
-      // A in QWERTY is also A in BÉPO
       // There is no string representation of the insert key, so we need to use
       // the SS_UP/DOWN macro, instead of SS_LCTL(...).
-      #ifndef MACOS_MODE
-      SEND_STRING_IF_PRESSED(SS_LCTL("a") SS_DOWN(X_LCTL) SS_TAP(X_INSERT) SS_UP(X_LCTL) SS_TAP(X_RIGHT));
-      #else
-      SEND_STRING_IF_PRESSED(SS_LCTL("a") SS_LCTL("c") SS_TAP(X_RIGHT));
-      #endif
+      if (is_mac_os()) {
+        SEND_STRING_IF_PRESSED(SS_LCTL("a") SS_LCTL("c") SS_TAP(X_RIGHT));
+      } else {
+        SEND_STRING_IF_PRESSED(SS_LCTL("a") SS_DOWN(X_LCTL) SS_TAP(X_INSERT) SS_UP(X_LCTL) SS_TAP(X_RIGHT));
+      }
       return false;
     case PASTE_LINK:
-      // K in BÉPO is B in QWERTY
-      #ifndef MACOS_MODE
-      SEND_STRING_IF_PRESSED(SS_LCTL("k") SS_DOWN(X_LSFT) SS_TAP(X_INSERT) SS_UP(X_LSFT) SS_TAP(X_ENTER));
-      #else
-      SEND_STRING_IF_PRESSED(SS_LCTL("k") SS_LCTL("v") SS_TAP(X_ENTER));
-      #endif
+      if (is_mac_os()) {
+        SEND_STRING_IF_PRESSED(SS_LCTL("k") SS_LCTL("v") SS_TAP(X_ENTER));
+      } else {
+        SEND_STRING_IF_PRESSED(SS_LCTL("k") SS_DOWN(X_LSFT) SS_TAP(X_INSERT) SS_UP(X_LSFT) SS_TAP(X_ENTER));
+      }
       return false;
     case FAST_UP:
       if (record->event.pressed) {
@@ -443,13 +431,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
       }
     case CTRL_B:
-      SEND_STRING_IF_PRESSED(SS_LCTL("b"));  // Ctrl+q (== Ctrl+b in bépo)
+      SEND_STRING_IF_PRESSED(SS_LCTL("b"));
       return false;
     case CTRL_U:
-      SEND_STRING_IF_PRESSED(SS_LCTL("u"));  // Ctrl+s (== Ctrl+u in bépo)
+      SEND_STRING_IF_PRESSED(SS_LCTL("u"));
       return false;
     case CTRL_I:
-      SEND_STRING_IF_PRESSED(SS_LCTL("i"));  // Ctrl+d (== Ctrl+i in bépo)
+      SEND_STRING_IF_PRESSED(SS_LCTL("i"));
       return false;
     case DOUBLE_0:
       if (record->event.pressed) {
@@ -458,40 +446,40 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
     case SWAP_CHARS:
-      #ifndef MACOS_MODE
-      SEND_STRING_IF_PRESSED(
-          SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_UP(X_LSFT)  // Select char to the left
-          SS_DOWN(X_LSFT) SS_TAP(X_DEL) SS_UP(X_LSFT)  // Shift + Del == cut
-          SS_TAP(X_LEFT)
-          SS_DOWN(X_LSFT) SS_TAP(X_INSERT) SS_UP(X_LSFT)  // Shift + Insert == paste
-          SS_TAP(X_RIGHT)
-        );
-      #else
-      SEND_STRING_IF_PRESSED(
-          SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_UP(X_LSFT)  // Select char to the left
-          SS_LCTL("x")
-          SS_TAP(X_LEFT)
-          SS_LCTL("v")
-          SS_TAP(X_RIGHT)
-        );
-      #endif
+      if (is_mac_os()) {
+        SEND_STRING_IF_PRESSED(
+            SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_UP(X_LSFT)  // Select char to the left
+            SS_LCTL("x")
+            SS_TAP(X_LEFT)
+            SS_LCTL("v")
+            SS_TAP(X_RIGHT)
+          );
+      } else {
+        SEND_STRING_IF_PRESSED(
+            SS_DOWN(X_LSFT) SS_TAP(X_LEFT) SS_UP(X_LSFT)  // Select char to the left
+            SS_DOWN(X_LSFT) SS_TAP(X_DEL) SS_UP(X_LSFT)  // Shift + Del == cut
+            SS_TAP(X_LEFT)
+            SS_DOWN(X_LSFT) SS_TAP(X_INSERT) SS_UP(X_LSFT)  // Shift + Insert == paste
+            SS_TAP(X_RIGHT)
+          );
+      }
       return false;
     case COPY_WORD:
-      #ifndef MACOS_MODE
-      SEND_STRING_IF_PRESSED(
-          SS_DOWN(X_LCTL) SS_TAP(X_LEFT) SS_UP(X_LCTL)  // Ctrl + Left
-          SS_DOWN(X_LCTL) SS_DOWN(X_LSFT) SS_TAP(X_RIGHT) SS_UP(X_LSFT) SS_UP(X_LCTL)  // Ctrl + Shift + Right
-          SS_DOWN(X_LCTL) SS_TAP(X_INSERT) SS_UP(X_LCTL)  // Ctrl + Insert == copy
-          SS_DOWN(X_RIGHT)
-        );
-      #else
-      SEND_STRING_IF_PRESSED(
-          SS_DOWN(X_LALT) SS_TAP(X_LEFT) SS_UP(X_LALT)  // Alt + Left
-          SS_DOWN(X_LALT) SS_DOWN(X_LSFT) SS_TAP(X_RIGHT) SS_UP(X_LSFT) SS_UP(X_LALT)  // Alt + Shift + Right
-          SS_LCTL("v")
-          SS_DOWN(X_RIGHT)
-        );
-      #endif
+      if (is_mac_os()) {
+        SEND_STRING_IF_PRESSED(
+            SS_DOWN(X_LALT) SS_TAP(X_LEFT) SS_UP(X_LALT)  // Alt + Left
+            SS_DOWN(X_LALT) SS_DOWN(X_LSFT) SS_TAP(X_RIGHT) SS_UP(X_LSFT) SS_UP(X_LALT)  // Alt + Shift + Right
+            SS_LCTL("v")
+            SS_DOWN(X_RIGHT)
+          );
+      } else {
+        SEND_STRING_IF_PRESSED(
+            SS_DOWN(X_LCTL) SS_TAP(X_LEFT) SS_UP(X_LCTL)  // Ctrl + Left
+            SS_DOWN(X_LCTL) SS_DOWN(X_LSFT) SS_TAP(X_RIGHT) SS_UP(X_LSFT) SS_UP(X_LCTL)  // Ctrl + Shift + Right
+            SS_DOWN(X_LCTL) SS_TAP(X_INSERT) SS_UP(X_LCTL)  // Ctrl + Insert == copy
+            SS_DOWN(X_RIGHT)
+          );
+      }
       return false;
     case CTRL_LEFT:
       if (record->event.pressed) {
@@ -512,7 +500,76 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }       
       return false;
     case PRINT_VER:
-      SEND_STRING_IF_PRESSED(VERSION_STRING);
+      SEND_STRING_IF_PRESSED("ergodox_ez_bepo_tm_style " OUR_VERSION);
+      if (record->event.pressed) {
+        switch (detected_host_os()) {
+          case OS_UNSURE:
+            SEND_STRING(" (no OS detected)");
+            break;
+          case OS_LINUX:
+            SEND_STRING(" (Linux detected)");
+            break;
+          case OS_WINDOWS:
+            SEND_STRING(" (Windows detected)");
+            break;
+          case OS_MACOS:
+            SEND_STRING(" (MacOS detected)");
+            break;
+          case OS_IOS:
+            SEND_STRING(" (iOS detected)");
+            break;
+        }
+      }
+      return false;
+    case COPY:
+      if (is_mac_os()) {
+        SEND_STRING_IF_PRESSED(SS_LCTL("c"))
+      } else {
+        SEND_STRING_IF_PRESSED(SS_DOWN(X_LCTL) SS_TAP(X_INSERT) SS_UP(X_LCTL))
+      }
+      return false;
+    case CUT:
+      if (is_mac_os()) {
+        SEND_STRING_IF_PRESSED(SS_LCTL("x"))
+      } else {
+        SEND_STRING_IF_PRESSED(SS_DOWN(X_LSFT) SS_TAP(X_DEL) SS_UP(X_LSFT))
+      }
+      return false;
+    case PASTE:
+      if (is_mac_os()) {
+        SEND_STRING_IF_PRESSED(SS_LCTL("v"))
+      } else {
+        SEND_STRING_IF_PRESSED(SS_DOWN(X_LCTL) SS_TAP(X_INSERT) SS_UP(X_LCTL))
+      }
+      return false;
+    case SLEEP:
+      switch (detected_host_os()) {
+        case OS_LINUX:
+          SEND_STRING_IF_PRESSED(SS_DOWN(X_LCTL) SS_DOWN(X_LALT) "l" SS_UP(X_LALT) SS_UP(X_LCTL))
+          return false;
+        case OS_MACOS:
+        case OS_IOS:
+          // The actual shortcut is Control-Shift-Power, but we expect Control and Command (Gui) to be swapped.
+          if (record->event.pressed) {
+            register_code(KC_LGUI);
+            register_code(KC_LSFT);
+            register_code(KC_PWR);
+          } else {
+            unregister_code(KC_PWR);
+            unregister_code(KC_LSFT);
+            unregister_code(KC_LGUI);
+          }
+          return true;
+        case OS_UNSURE:
+        case OS_WINDOWS:
+        default:
+          if (record->event.pressed) {
+            register_code(KC_SLEP);
+          } else {
+            unregister_code(KC_SLEP);
+          }
+          break;
+      }
       return false;
     HANDLE_LATERALIZED_KEY_PAIR(KC_LEFT, KC_RIGHT);
     HANDLE_LATERALIZED_KEY_PAIR(MS_LEFT, MS_RGHT);
