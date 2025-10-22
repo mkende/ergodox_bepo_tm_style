@@ -17,7 +17,7 @@
 #include "sendstring_bepo.h"
 
 // The version of the keyboard (printed using NUM + TAB).
-#define OUR_VERSION "v7"
+#define OUR_VERSION "v8"
 
 // The layers that we are defining for this keyboards.
 #define BASE 0

@@ -1,6 +1,6 @@
 Changelog for the bépo "TypeMatrix style" layout for the Ergodox EZ keyboard
 
-v8 - ??
+v8 - 2025-10-22
  - Fix the copy/paste shortcut on the MacOS variant.
  - Drop the MacOS variant and use OS detection instead to use the correct
    shortcuts.
