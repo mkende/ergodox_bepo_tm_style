@@ -1,6 +1,6 @@
-// An Ergodox EZ keymap meant to be used with a bépo layout (FR ergonomic
 // layout, dvorak style). The overall design is slightly inspired by the
 // TypeMatrix keyboard. Switching between a TypeMatrix and an Ergodox with this
+// An Ergodox EZ keymap meant to be used with a bépo layout (FR ergonomic
 // layout should be relatively easy.
 //
 // See the README.md file for an image of this keymap.
@@ -73,22 +73,23 @@ bool is_mac_os(void) {
 enum {
   // SAFE_RANGE must be used to tag the first element of the enum.
   COPY_ALL = SAFE_RANGE,  // CTRL + A and then ctrl + insert (copy)
-  PASTE_LINK,  // CTRL + K (insert link) and then shift + insert (paste)
-  FAST_UP,     // Send an up arrow FAST_ARROW_TIME times.
-  FAST_DOWN,   // Send a down arrow FAST_ARROW_TIME times.
-  CTRL_LEFT,   // Send Ctrl+left (move one word left).
-  CTRL_RIGHT,  // Send Ctrl+right (move one word right).
-  SWAP_CHARS,  // Swap the last two chars.
-  COPY_WORD,   // Copy the current word
-  CTRL_B,      // Send Ctrl+B (bold).
-  CTRL_U,      // Send Ctrl+B (underline).
-  CTRL_I,      // Send Ctrl+B (italic).
-  DOUBLE_0,    // Send 00
-  PRINT_VER,   // Send the current version of the board as a string.
-  COPY,        // Send ctrl + insert, except under MacOS where it sends ctrl + c.
-  CUT,         // Send shift + delete, except under MacOS
-  PASTE,       // shift + insert, except under MacOS
-  SLEEP,       // Puts the computer to sleep
+  PASTE_LINK,   // CTRL + K (insert link) and then shift + insert (paste)
+  FAST_UP,      // Send an up arrow FAST_ARROW_TIME times.
+  FAST_DOWN,    // Send a down arrow FAST_ARROW_TIME times.
+  CTRL_LEFT,    // Send Ctrl+left (move one word left).
+  CTRL_RIGHT,   // Send Ctrl+right (move one word right).
+  SWAP_CHARS,   // Swap the last two chars.
+  COPY_WORD,    // Copy the current word
+  TRIPLE_QUOTE, // Sent ``` (to help with writing Markdown)
+  CTRL_B,       // Send Ctrl+B (bold).
+  CTRL_U,       // Send Ctrl+B (underline).
+  CTRL_I,       // Send Ctrl+B (italic).
+  DOUBLE_0,     // Send 00
+  PRINT_VER,    // Send the current version of the board as a string.
+  COPY,         // Send ctrl + insert, except under MacOS where it sends ctrl + c.
+  CUT,          // Send shift + delete, except under MacOS
+  PASTE,        // shift + insert, except under MacOS
+  SLEEP,        // Puts the computer to sleep
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -116,10 +117,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // Layer 1: function and media keys.
   [FN] = LAYOUT_ergodox(
     /* left hand */
-    SLEEP, KC_F1,      KC_F2,  KC_F3,   KC_F4,    KC_F5,    ___,
-    ___,      CTRL_B,     ___,    ___,     ___,      ___,      ___,
-    ___,      COPY_ALL,   CTRL_U, CTRL_I,  ___,      KC_LSFT,
-    ___,      PASTE_LINK, CUT,    COPY,    PASTE,    KC_LCTL, ___,
+    SLEEP, KC_F1,      KC_F2,  KC_F3,   KC_F4,    KC_F5,        ___,
+    ___,      CTRL_B,     ___,    ___,     ___,   TRIPLE_QUOTE, ___,
+    ___,      COPY_ALL,   CTRL_U, CTRL_I,  ___,   KC_LSFT,
+    ___,      PASTE_LINK, CUT,    COPY,    PASTE, KC_LCTL,      ___,
     ___,      ___,        ___,    ___,     ___,
                                                          ___, KC_MNXT,
                                                               KC_MPLY,
@@ -423,6 +424,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       } else {
         SEND_STRING_IF_PRESSED(SS_LCTL("k") SS_DOWN(X_LSFT) SS_TAP(X_INSERT) SS_UP(X_LSFT) SS_TAP(X_ENTER));
       }
+      return false;
+    case TRIPLE_QUOTE:
+      SEND_STRING_IF_PRESSED("```")
       return false;
     case FAST_UP:
       if (record->event.pressed) {

@@ -1,5 +1,9 @@
 Changelog for the bépo "TypeMatrix style" layout for the Ergodox EZ keyboard
 
+v9 - 2025-11-02
+ - Add a shortcut to print ``` on FN+è (to help with markdown) as this otherwise
+   requires a total of 9 key presses (if done with that dead-key)!
+
 v8 - 2025-10-22
  - Fix the copy/paste shortcut on the MacOS variant.
  - Drop the MacOS variant and use OS detection instead to use the correct
