@@ -1,6 +1,6 @@
 Changelog for the bépo "TypeMatrix style" layout for the Ergodox EZ keyboard
 
-v10 - ??
+v10 - 2025-11-29
  - Add an "OS LEDS" layer (on FN + sysleds) to show the currently detected OS.
  - Add a keyboard reboot key on F11 in the OS LEDS layer.
  - Update the "start" and "end" keys on a Mac layout to emit ctrl + arrow
