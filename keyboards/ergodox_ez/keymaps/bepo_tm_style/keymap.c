@@ -25,7 +25,8 @@
 #define MOUSE 2
 #define NUMS 3
 #define SYSLEDS 4
-#define SWAP 5  // Should always be last (probably).
+#define OSLEDS 5
+#define SWAP 6  // Should always be last (probably).
 
 // The Tap Dance identifiers, used in the TD keycode and tap_dance_actions array.
 #define TAP_MACRO 0
@@ -130,7 +131,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         ___, FAST_UP,   KC_HOME,   KC_UP,   KC_END,     KC_PGUP,    KC_F12,
              FAST_DOWN, KC_LEFT,   KC_DOWN, KC_RIGHT,   KC_PGDN,    CW_TOGG,
         ___, ___,       CTRL_LEFT, ___,     CTRL_RIGHT, SWAP_CHARS, COPY_WORD,
-                        ___,       ___,     ___,        ___,        ___,
+                        ___,       ___,     TT(OSLEDS), ___,        ___,
     KC_HOME, KC_END,
     KC_PGUP,
     KC_PGDN, ___,       ___),
@@ -205,6 +206,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ___, ___,
     ___,
     ___, ___, ___),
+  
+  // Layer 5: Similar to the SYSLEDS one but the LEDS are showing the currently
+  // detected OS.
+  [OSLEDS] = LAYOUT_ergodox(
+    /* left hand */
+    ___, ___, ___, ___, ___, ___, ___,
+    ___, ___, ___, ___, ___, ___, ___,
+    ___, ___, ___, ___, ___, ___,
+    ___, ___, ___, ___, ___, ___, ___,
+    ___, ___, ___, ___, ___,
+                                  ___, ___,
+                                       ___,
+                             ___, ___, ___,
+    /* right hand */
+         ___, ___, ___, ___, ___,         ___, QK_REBOOT,
+         ___, ___, ___, ___, ___,         ___, ___,
+              ___, ___, ___, ___,         ___, ___,
+         ___, ___, ___, ___, ___,         ___, ___,
+                   ___, ___, TT(OSLEDS), ___, ___,
+    ___, ___,
+    ___,
+    ___, ___, ___),
 
   // Layer 5: hand swap mode, the primary FN/MOUSE thumb keys are now activating
   // and swap. The second thumb key become the FN mode/toggle (on both sides).
@@ -238,6 +261,9 @@ static bool is_macro1_recording = false;
 static layer_state_t current_layer_state = 0;
 layer_state_t layer_state_set_user(layer_state_t state);
 
+// Custom function that is called any time I want to update the LED states.
+void my_set_leds(void);
+
 // Method called at the end of the tap dance on the TAP_MACRO key. That key is
 // used to start recording a macro (double tap or more), to stop recording (any
 // number of tap), or to play the recorded macro (1 tap).
@@ -248,13 +274,13 @@ void macro_tapdance_fn(tap_dance_state_t *state, void *user_data) {
   if (is_macro1_recording) {
     keycode = DM_RSTP;
     is_macro1_recording = false;
-    layer_state_set_user(current_layer_state);
+    my_set_leds();
   } else if (state->count == 1) {
     keycode = DM_PLY1;
   } else {
     keycode = DM_REC1;
     is_macro1_recording = true;
-    layer_state_set_user(current_layer_state);
+    my_set_leds();
   }
 
   record.event.pressed = true;
@@ -643,10 +669,13 @@ void led_3_off(void) {
   ergodox_right_led_3_off();
 }
 
-// Called when the computer wants to change the state of the keyboard LEDs.
-bool led_update_user(led_t led_state) {
-  sys_led_state = led_state;
-  if (LAYER_ON(SYSLEDS)) {
+// Custom function that is called any time I want to update the LED states.
+void my_set_leds(void) {
+  if (is_macro1_recording) {
+    led_1_on();
+    led_2_on();
+    led_3_on();
+  } else if (LAYER_ON(SYSLEDS)) {
     if (sys_led_state.caps_lock) {
       led_1_on();
     } else {
@@ -662,43 +691,53 @@ bool led_update_user(led_t led_state) {
     } else {
       led_3_off();
     }
+  } else if (LAYER_ON(OSLEDS)) {
+    led_1_off();
+    led_2_off();
+    led_3_off();
+    switch (detected_host_os()) {
+      case OS_UNSURE:
+      case OS_LINUX:
+        led_2_on();
+        break;
+      case OS_WINDOWS:
+        led_1_on();
+        break;
+      case OS_MACOS:
+      case OS_IOS:
+        led_3_on();
+    }
+  } else {
+    if ((bool)LAYER_ON(FN) ^ (bool)LAYER_ON(SWAP)) {
+      led_3_on();
+    } else {
+      led_3_off();
+    }
+
+    if ((bool)LAYER_ON(NUMS) ^ (bool)LAYER_ON(SWAP)) {
+      led_2_on();
+    } else {
+      led_2_off();
+    }
+
+    if ((bool)LAYER_ON(MOUSE) ^ (bool)LAYER_ON(SWAP)) {
+      led_1_on();
+    } else {
+      led_1_off();
+    }    
   }
+}
+
+// Called when the computer wants to change the state of the keyboard LEDs.
+bool led_update_user(led_t led_state) {
+  sys_led_state = led_state;
+  my_set_leds();
   return false;
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
   current_layer_state = state;
-
-  if (is_macro1_recording) {
-    led_1_on();
-    led_2_on();
-    led_3_on();
-    return state;
-  }
-
-  if (LAYER_ON(SYSLEDS)) {
-    led_update_user(sys_led_state);
-    return state;
-  }
-
-  if ((bool)LAYER_ON(FN) ^ (bool)LAYER_ON(SWAP)) {
-    led_3_on();
-  } else {
-    led_3_off();
-  }
-
-  if ((bool)LAYER_ON(NUMS) ^ (bool)LAYER_ON(SWAP)) {
-    led_2_on();
-  } else {
-    led_2_off();
-  }
-
-  if ((bool)LAYER_ON(MOUSE) ^ (bool)LAYER_ON(SWAP)) {
-    led_1_on();
-  } else {
-    led_1_off();
-  }
-
+  my_set_leds();
   return state;
 };
 

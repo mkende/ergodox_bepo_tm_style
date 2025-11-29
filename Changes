@@ -1,5 +1,10 @@
 Changelog for the bépo "TypeMatrix style" layout for the Ergodox EZ keyboard
 
+v10 - ??
+ - Add an "OS LEDS" layer (on FN + sysleds) to show the currently detected OS.
+ - Add a keyboard reboot key on F11 in the OS LEDS layer.
+
+
 v9 - 2025-11-02
  - Add a shortcut to print ``` on FN+è (to help with markdown) as this otherwise
    requires a total of 9 key presses (if done with that dead-key)!
