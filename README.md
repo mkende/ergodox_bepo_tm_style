@@ -66,8 +66,8 @@ The layout has some OS specific behavior:
 
     In addition, the sleep function is sent with `gui+shift+power`.
 
-    Note that it is expected that you will switch the gui and control keys at
-    the OS level when using this keyboard layout on a MacOS.
+    Note that it is expected that you will switch the gui (command) and control
+    keys at the OS level when using this keyboard layout on a MacOS.
 
 -   On Linux, the sleep function is sent with `ctrl+shift+L` which locks the
     computer on most systems (otherwise a shortcut can be added in the settings

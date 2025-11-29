@@ -85,6 +85,8 @@ enum {
   CTRL_B,       // Send Ctrl+B (bold).
   CTRL_U,       // Send Ctrl+B (underline).
   CTRL_I,       // Send Ctrl+B (italic).
+  HOME,         // Home, or ctrl + left arrow on MacOS
+  END,          // End, or ctrl + right arrow on MacOS
   DOUBLE_0,     // Send 00
   PRINT_VER,    // Send the current version of the board as a string.
   COPY,         // Send ctrl + insert, except under MacOS where it sends ctrl + c.
@@ -128,11 +130,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                  ___,    ___, KC_MPRV,
     /* right hand */
         ___, KC_F6,     KC_F7,     KC_F8,   KC_F9,      KC_F10,     KC_F11,
-        ___, FAST_UP,   KC_HOME,   KC_UP,   KC_END,     KC_PGUP,    KC_F12,
+        ___, FAST_UP,   HOME,      KC_UP,   END,        KC_PGUP,    KC_F12,
              FAST_DOWN, KC_LEFT,   KC_DOWN, KC_RIGHT,   KC_PGDN,    CW_TOGG,
         ___, ___,       CTRL_LEFT, ___,     CTRL_RIGHT, SWAP_CHARS, COPY_WORD,
                         ___,       ___,     TT(OSLEDS), ___,        ___,
-    KC_HOME, KC_END,
+    HOME, END,
     KC_PGUP,
     KC_PGDN, ___,       ___),
     // Note that any change to the FN layer above must be added to
@@ -519,23 +521,62 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           );
       }
       return false;
+    
     case CTRL_LEFT:
       if (record->event.pressed) {
-        register_code(KC_LCTL);
+        // ctrl + arrow to move by one word. On MacOS this is done using the
+        // Option key (Alt) + arrow
+        register_code(is_mac_os() ? KC_LALT : KC_LCTL);
         register_code(KC_LEFT);
       } else {
         unregister_code(KC_LEFT);
-        unregister_code(KC_LCTL);
+        unregister_code(is_mac_os() ? KC_LALT : KC_LCTL);
       }
       return false;
     case CTRL_RIGHT:
       if (record->event.pressed) {
-        register_code(KC_LCTL);
+        register_code(is_mac_os() ? KC_LALT : KC_LCTL);
         register_code(KC_RIGHT);
       } else {
         unregister_code(KC_RIGHT);
-        unregister_code(KC_LCTL);
+        unregister_code(is_mac_os() ? KC_LALT : KC_LCTL);
       }       
+      return false;
+    case HOME:
+      if (is_mac_os()) {
+        if (record->event.pressed) {
+          // The actual MacOS shortcut is Command+arrow, but we expect ctrl and
+          // command to be swapped.
+          register_code(KC_LCTL);
+          register_code(KC_LEFT);
+        } else {
+          unregister_code(KC_LEFT);
+          unregister_code(KC_LCTL);
+        }       
+      } else {
+        if (record->event.pressed) {
+          register_code(KC_HOME);
+        } else {
+          unregister_code(KC_HOME);
+        }
+      }
+      return false;
+    case END:
+      if (is_mac_os()) {
+        if (record->event.pressed) {
+          register_code(KC_LCTL);
+          register_code(KC_RIGHT);
+        } else {
+          unregister_code(KC_RIGHT);
+          unregister_code(KC_LCTL);
+        }       
+      } else {
+        if (record->event.pressed) {
+          register_code(KC_END);
+        } else {
+          unregister_code(KC_END);
+        }
+      }
       return false;
     case PRINT_VER:
       SEND_STRING_IF_PRESSED("ergodox_ez_bepo_tm_style " OUR_VERSION);
