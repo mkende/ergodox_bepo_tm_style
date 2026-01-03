@@ -132,7 +132,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         ___, KC_F6,     KC_F7,     KC_F8,   KC_F9,      KC_F10,     KC_F11,
         ___, FAST_UP,   HOME,      KC_UP,   END,        KC_PGUP,    KC_F12,
              FAST_DOWN, KC_LEFT,   KC_DOWN, KC_RIGHT,   KC_PGDN,    CW_TOGG,
-        ___, ___,       CTRL_LEFT, ___,     CTRL_RIGHT, SWAP_CHARS, COPY_WORD,
+        ___, ___,       CTRL_LEFT, KC_DOWN, CTRL_RIGHT, SWAP_CHARS, COPY_WORD,
                         ___,       ___,     TT(OSLEDS), ___,        ___,
     HOME, END,
     KC_PGUP,

@@ -2,6 +2,8 @@ Changelog for the bépo "TypeMatrix style" layout for the Ergodox EZ keyboard
 
 v11 - ??
  - Fix the paste command that was invalid under windows/linux (bug in v10).
+ - Duplace the down key between the "ctrl+arrow" one, as it’s natural to have it
+   there (at least for my fingers).
 
 v10 - 2025-11-29
  - Add an "OS LEDS" layer (on FN + sysleds) to show the currently detected OS.
