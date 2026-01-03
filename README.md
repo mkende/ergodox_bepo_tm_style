@@ -11,7 +11,7 @@ between one and the other is easy.
 
 ![The Keymap](img/V11.png)
 
-*This keymap is generated using http://www.keyboard-layout-editor.com.*
+*The keymap image above is generated using http://www.keyboard-layout-editor.com.*
 
 You can download the keymap on the
 [releases page](https://github.com/mkende/ergodox_bepo_tm_style/releases) or you
