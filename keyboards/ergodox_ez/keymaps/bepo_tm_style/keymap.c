@@ -621,7 +621,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (is_mac_os()) {
         SEND_STRING_IF_PRESSED(SS_LCTL("v"))
       } else {
-        SEND_STRING_IF_PRESSED(SS_DOWN(X_LCTL) SS_TAP(X_INSERT) SS_UP(X_LCTL))
+        SEND_STRING_IF_PRESSED(SS_DOWN(X_LSFT) SS_TAP(X_INSERT) SS_UP(X_LSFT))
       }
       return false;
     case SLEEP:
