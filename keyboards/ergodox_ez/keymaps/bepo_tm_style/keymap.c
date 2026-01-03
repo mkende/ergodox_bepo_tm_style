@@ -9,8 +9,6 @@
 //
 // - Consider using Key Overrides to improve the behavior under MacOS
 //   https://docs.qmk.fm/features/key_overrides
-// - Try using OS Detection instead of the static MacOS build
-//   https://docs.qmk.fm/features/os_detection
 
 #include QMK_KEYBOARD_H
 #include "keymap_bepo.h"
