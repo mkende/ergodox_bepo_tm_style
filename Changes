@@ -1,9 +1,5 @@
 Changelog for the bépo "TypeMatrix style" layout for the Ergodox EZ keyboard
 
-Unreleased
- - Update the base ZSA QMK firmware to the latest firmware25 version (includes
-   a fix for the system sleep key on Windows and a fix for the EEPROM reset).
-
 v11 - 2026-01-03
  - Fix the paste command that was invalid under windows/linux (bug in v10).
  - Duplicate the down key between the "ctrl+arrow" one, as it’s natural to have it
