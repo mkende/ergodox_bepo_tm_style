@@ -166,7 +166,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // recognised by all OSs.
   [NUMS] = LAYOUT_ergodox(
     /* left hand */
-    KC_PSCR,   KC_INS, KC_PAUS, ___, ___, ___, ___,
+    KC_PSCR,   KC_INS, KC_PAUS, ___, ___, ___, MJ_TOGG,
     PRINT_VER, ___,    ___,     ___, ___, ___, ___,
     ___,       ___,    ___,     ___, ___, ___,
     ___,       ___,    ___,     ___, ___, ___, ___,

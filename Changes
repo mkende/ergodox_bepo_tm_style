@@ -1,5 +1,9 @@
 Changelog for the bépo "TypeMatrix style" layout for the Ergodox EZ keyboard
 
+v12 - Unreleased
+ - Add a mouse jiggler toggle key (keeps the computer awake by moving the mouse
+   cursor by one pixel every second) on NUM + left DEL.
+
 v11 - 2026-01-03
  - Fix the paste command that was invalid under windows/linux (bug in v10).
  - Duplicate the down key between the "ctrl+arrow" one, as it’s natural to have it
