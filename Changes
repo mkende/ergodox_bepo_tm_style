@@ -1,6 +1,6 @@
 Changelog for the bépo "TypeMatrix style" layout for the Ergodox EZ keyboard
 
-v12 - Unreleased
+v12 - 2026-10-09
  - Add a mouse jiggler toggle key (keeps the computer awake by moving the mouse
    cursor by one pixel every second) on NUM + left DEL.
  - Swap the media next/previous keys on the FN layer (on the volume up/down

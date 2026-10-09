@@ -15,7 +15,7 @@
 #include "sendstring_bepo.h"
 
 // The version of the keyboard (printed using NUM + TAB).
-#define OUR_VERSION "v11"
+#define OUR_VERSION "v12"
 
 // The MCU of the keyboard (also printed using NUM + TAB).
 #if defined(__AVR__)
