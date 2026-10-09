@@ -3,6 +3,10 @@ Changelog for the bépo "TypeMatrix style" layout for the Ergodox EZ keyboard
 v12 - Unreleased
  - Add a mouse jiggler toggle key (keeps the computer awake by moving the mouse
    cursor by one pixel every second) on NUM + left DEL.
+ - Swap the media next/previous keys on the FN layer (on the volume up/down
+   keys) so that previous is on the top key and next on the bottom one (as was
+   already the case on the MOUSE layer).
+ - Print the MCU type (m32u4 or stm32) with the version on NUM + TAB.
 
 v11 - 2026-01-03
  - Fix the paste command that was invalid under windows/linux (bug in v10).

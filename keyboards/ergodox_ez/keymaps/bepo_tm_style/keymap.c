@@ -17,6 +17,15 @@
 // The version of the keyboard (printed using NUM + TAB).
 #define OUR_VERSION "v11"
 
+// The MCU of the keyboard (also printed using NUM + TAB).
+#if defined(__AVR__)
+#define MCU_NAME "m32u4"
+#elif defined(MCU_STM32)
+#define MCU_NAME "stm32"
+#else
+#define MCU_NAME "unknown_mcu"
+#endif
+
 // The layers that we are defining for this keyboards.
 #define BASE 0
 #define FN 1
@@ -123,9 +132,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ___,      COPY_ALL,   CTRL_U, CTRL_I,  ___,   KC_LSFT,
     ___,      PASTE_LINK, CUT,    COPY,    PASTE, KC_LCTL,      ___,
     ___,      ___,        ___,    ___,     ___,
-                                                         ___, KC_MNXT,
+                                                         ___, KC_MPRV,
                                                               KC_MPLY,
-                                                 ___,    ___, KC_MPRV,
+                                                 ___,    ___, KC_MNXT,
     /* right hand */
         ___, KC_F6,     KC_F7,     KC_F8,   KC_F9,      KC_F10,     KC_F11,
         ___, FAST_UP,   HOME,      KC_UP,   END,        KC_PGUP,    KC_F12,
@@ -577,7 +586,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
     case PRINT_VER:
-      SEND_STRING_IF_PRESSED("ergodox_ez_bepo_tm_style " OUR_VERSION);
+      SEND_STRING_IF_PRESSED("ergodox_ez_bepo_tm_style " OUR_VERSION " " MCU_NAME);
       #ifdef LEFT_HANDED_MODE
       SEND_STRING_IF_PRESSED(" left_handed")
       #endif
