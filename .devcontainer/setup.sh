@@ -12,10 +12,10 @@ python3 -m pip install --upgrade milc
 git config --global --add safe.directory /workspaces/qmk_userspace
 git submodule update --init --recursive
 
-[ -d /workspaces/qmk_firmware ] || git clone https://github.com/qmk/qmk_firmware.git /workspaces/qmk_firmware
-git config --global --add safe.directory /workspaces/qmk_firmware
+# Use the ZSA fork of QMK checked out as a submodule of this repository.
+git config --global --add safe.directory /workspaces/qmk_userspace/qmk_firmware
 
-qmk config user.qmk_home=/workspaces/qmk_firmware
+qmk config user.qmk_home=/workspaces/qmk_userspace/qmk_firmware
 qmk config user.overlay_dir=/workspaces/qmk_userspace
 
 qmk git-submodule
