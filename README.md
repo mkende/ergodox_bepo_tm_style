@@ -9,7 +9,7 @@ The keymap here is meant to be used with a [Bépo](http://bepo.fr) layout. It is
 designed to be somewhat similar to a TypeMatrix keyboard so that switching
 between one and the other is easy.
 
-![The Keymap](img/V11.png)
+![The Keymap](img/V12.png)
 
 *The keymap image above is generated using http://www.keyboard-layout-editor.com.*
 
@@ -50,7 +50,7 @@ details.
 The firmware can then be flashed with the following command for example:
 
 ```sh
-teensy_loader_cli --mcu=TEENSY2 -w ergodox_ez_base_bepo_tm_style.hex
+teensy_loader_cli --mcu=TEENSY2 -w zsa_ergodox_ez_m32u4_base_bepo_tm_style.hex
 ```
 
 Which requires the Teensy CLI program.
