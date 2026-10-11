@@ -1,6 +1,13 @@
 name: Build QMK firmware
 
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
+    inputs:
+      release_name:
+        description: 'Existing release (tag name, e.g. v12) to attach the binaries to. If empty, the "latest" release is re-created instead.'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -13,8 +20,37 @@ jobs:
       qmk_repo: qmk/qmk_firmware
       qmk_ref: master
 
+  # Used when no release name is given: deletes and re-creates the "latest"
+  # release with the new binaries.
   publish:
     name: 'QMK Userspace Publish'
     uses: qmk/.github/.github/workflows/qmk_userspace_publish.yml@main
-    if: always() && !cancelled()
+    if: always() && !cancelled() && inputs.release_name == ''
     needs: build
+
+  # Used when a release name is given: attaches the binaries to that existing
+  # release, keeping its title and notes.
+  upload:
+    name: 'Upload to release'
+    if: inputs.release_name != ''
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v8
+        with:
+          name: Firmware
+          path: firmware
+
+      - name: Upload binaries to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_NAME: ${{ inputs.release_name }}
+        run: |
+          shopt -s nullglob
+          files=(firmware/*.hex firmware/*.bin firmware/*.uf2)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No firmware files found." >&2
+            exit 1
+          fi
+          gh release upload "$RELEASE_NAME" "${files[@]}" --clobber --repo "$GITHUB_REPOSITORY"
