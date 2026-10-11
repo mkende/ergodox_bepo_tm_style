@@ -9,7 +9,7 @@ The keymap here is meant to be used with a [Bépo](http://bepo.fr) layout. It is
 designed to be somewhat similar to a TypeMatrix keyboard so that switching
 between one and the other is easy.
 
-![The Keymap](img/V11.png)
+![The Keymap](img/V12.png)
 
 *The keymap image above is generated using http://www.keyboard-layout-editor.com.*
 
